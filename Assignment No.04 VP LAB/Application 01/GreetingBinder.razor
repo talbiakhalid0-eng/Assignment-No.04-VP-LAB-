@@ -1,0 +1,23 @@
+﻿@page "/greeting-binder"
+@rendermode InteractiveServer
+
+<div class="glass-panel text-center">
+    <h3 style="color: var(--neon-lilac);" class="mb-4">Data Binding Demonstration</h3>
+
+    <div class="mb-4 col-md-6 mx-auto">
+        <label class="form-label text-muted">Enter Identity Signature</label>
+        <input type="text" class="form-control neon-input text-center" @bind="UserName" @bind:event="oninput" placeholder="Type operator designation name..." />
+    </div>
+
+    <div class="mt-4 p-3" style="border-left: 3px solid var(--neon-glow); background: rgba(255,255,255,0.01);">
+        <h4 class="fw-light">System Response: <span style="color: var(--neon-glow); font-weight: bold;">@GreetingMessage</span></h4>
+    </div>
+</div>
+
+@code {
+    private string UserName { get; set; } = string.Empty;
+
+    private string GreetingMessage => string.IsNullOrWhiteSpace(UserName)
+        ? "Awaiting operational data stream registration..."
+        : $"Access Granted. Welcome back, Officer {UserName}. Authorization profile validated.";
+}
