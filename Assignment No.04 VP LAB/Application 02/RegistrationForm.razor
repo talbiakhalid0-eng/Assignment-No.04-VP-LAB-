@@ -1,0 +1,46 @@
+﻿@page "/registration-form"
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Web
+@rendermode Microsoft.AspNetCore.Components.Web.RenderMode.InteractiveServer
+
+<div class="glass-panel mx-auto" style="max-width: 600px;">
+    <h3 style="color: var(--neon-accent);" class="mb-4 text-center">Secure Profile Form Gate</h3>
+
+    <EditForm Model="@Profile" OnValidSubmit="ProcessValidFormSubmission">
+        <DataAnnotationsValidator />
+
+        <div class="mb-3">
+            <label class="form-label text-muted">First Name</label>
+            <InputText class="form-control neon-input" @bind-Value="Profile.FirstName" />
+            <ValidationMessage For="@(() => Profile.FirstName)" class="text-danger small mt-1" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label text-muted">Last Name</label>
+            <InputText class="form-control neon-input" @bind-Value="Profile.LastName" />
+            <ValidationMessage For="@(() => Profile.LastName)" class="text-danger small mt-1" />
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label text-muted">System Communication Email Routing Route</label>
+            <InputText class="form-control neon-input" @bind-Value="Profile.Email" />
+            <ValidationMessage For="@(() => Profile.Email)" class="text-danger small mt-1" />
+        </div>
+
+        <button type="submit" class="btn btn-neon-emerald w-100 py-2">Commit Security Profile</button>
+    </EditForm>
+
+    @if (FormCommittedSuccessfully)
+    {
+        <div class="alert alert-success mt-4 border-0 text-center" style="background: rgba(0, 245, 212, 0.1); color: var(--neon-accent);">
+            Operational profile parameters locked and committed to registration system stack safely.
+        </div>
+    }
+</div>
+
+@code {
+    private UserProfileModel Profile { get; set; } = new();
+    private bool FormCommittedSuccessfully { get; set; } = false;
+
+    private void ProcessValidFormSubmission() => FormCommittedSuccessfully = true;
+}
