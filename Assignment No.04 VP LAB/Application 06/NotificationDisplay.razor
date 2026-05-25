@@ -1,0 +1,38 @@
+﻿@page "/notify-display-panel"
+@inject NotificationService EngineWorker
+@inject NotificationConfig StructuralStyleReference
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Web
+@rendermode Microsoft.AspNetCore.Components.Web.RenderMode.InteractiveServer
+
+
+<div class="glass-panel mx-auto mt-2" style="max-width: 550px;">
+    <h4 class="text-white mb-3">Live Log Dispatch Matrix</h4>
+    <button class="btn btn-neon-emerald btn-sm w-100 mb-3" @onclick="FetchBroadcastsFromService">Refresh Bus Pipelines</button>
+
+    @if (FetchedSystemBroadcastLogs != null)
+    {
+        @foreach (var broadcastItem in FetchedSystemBroadcastLogs)
+        {
+            @if (StructuralStyleReference.NotificationStyle == "Compact")
+            {
+                <div class="p-1 mb-1 small text-truncate text-warning font-monospace" style="border-bottom: 1px solid var(--border-glass);">
+                    ⚠️ @broadcastItem.Substring(0, 35)...
+                </div>
+            }
+            else
+            {
+                <div class="p-2 mb-2 rounded small text-white-50" style="background: rgba(255,255,255,0.02); border-left: 3px solid var(--neon-accent);">
+                    <span class="text-white d-block fw-semibold">Active Dispatch Notification:</span>
+                    @broadcastItem
+                </div>
+            }
+        }
+    }
+</div>
+
+@code {
+    private List<string>? FetchedSystemBroadcastLogs { get; set; }
+    protected override async Task OnInitializedAsync() => await FetchBroadcastsFromService();
+    private async Task FetchBroadcastsFromService() => FetchedSystemBroadcastLogs = await EngineWorker.ExtractActiveSystemLogsAsync();
+}
