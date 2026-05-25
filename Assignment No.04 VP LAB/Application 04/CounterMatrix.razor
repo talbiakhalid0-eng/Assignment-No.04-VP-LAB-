@@ -1,0 +1,27 @@
+﻿@page "/counter-matrix"
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Web
+@rendermode Microsoft.AspNetCore.Components.Web.RenderMode.InteractiveServer
+
+<div class="glass-panel text-center mx-auto" style="max-width: 500px;">
+    <h3 style="color: var(--neon-lilac);" class="mb-3">Unified Metrics Tracker</h3>
+
+    <div class="counter-display my-4">
+        <h1 class="display-1 fw-bold" style="color: var(--neon-glow); text-shadow: 0 0 15px rgba(255, 0, 127, 0.4);">@MetricStateRegister</h1>
+        <small class="text-muted text-uppercase tracking-wider">Synchronized Shared Registry Register</small>
+    </div>
+
+    <div class="row g-2">
+        <div class="col-6">
+            <button class="btn btn-neon-magenta w-100 py-2 fw-semibold" @onclick="IncrementRegisterState">Iterate Frame</button>
+        </div>
+        <div class="col-6">
+            <input type="number" class="form-control neon-input text-center py-2" @bind="MetricStateRegister" />
+        </div>
+    </div>
+</div>
+
+@code {
+    private int MetricStateRegister { get; set; } = 0;
+    private void IncrementRegisterState() => MetricStateRegister++;
+}
