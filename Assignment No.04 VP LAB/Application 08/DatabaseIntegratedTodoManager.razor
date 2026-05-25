@@ -1,0 +1,78 @@
+﻿@page "/database-todo"
+@inject TodoDatabaseService DatabaseEngineWorker
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Web
+@rendermode Microsoft.AspNetCore.Components.Web.RenderMode.InteractiveServer
+
+<div class="glass-panel mx-auto" style="max-width: 650px;">
+    <h3 style="color: var(--neon-accent);" class="mb-1 text-center">Persistent Infrastructure System Panel</h3>
+    <p class="text-muted text-center small mb-4">Direct Local Database Commit Syncs running via ADO.NET Data Pipelines</p>
+
+    <div class="input-group mb-4">
+        <input type="text" class="form-control neon-input" placeholder="Append transaction data log payload..."
+               @bind="UserTextStringInput" @onkeyup="CatchKeyboardTriggers" />
+        <button class="btn btn-neon-emerald" type="button" @onclick="CommitRowToDatabaseEngine">Save Frame Row</button>
+    </div>
+
+    <div class="database-rendering-stream my-3" style="max-height: 300px; overflow-y: auto;">
+        @if (SynchronizedStateLocalMirrorCache == null || SynchronizedStateLocalMirrorCache.Count == 0)
+        {
+            <p class="text-muted text-center py-4 italic">Zero active database table trace rows detected inside schema.</p>
+        }
+        else
+        {
+            @foreach (var taskRowItem in SynchronizedStateLocalMirrorCache)
+            {
+                <div class="d-flex justify-content-between align-items-center p-2 mb-2 rounded border"
+                     style="background: rgba(255,255,255,0.01); border-color: var(--border-glass) !important;">
+                    <span class="text-white-50">
+                        <small class="text-muted font-monospace me-2">ID: @taskRowItem.TaskIdentityKeyId</small> @taskRowItem.TaskCoreBodyValue
+                    </span>
+                    <button class="btn btn-sm btn-outline-danger py-0 px-2" @onclick="() => RunTargetDeleteQueryOperation(taskRowItem.TaskIdentityKeyId)">
+                        <i class="bi bi-trash3 text-danger"></i>
+                    </button>
+                </div>
+            }
+        }
+    </div>
+
+    @if (SynchronizedStateLocalMirrorCache?.Count > 0)
+    {
+        <button class="btn btn-sm btn-outline-danger w-100" @onclick="PurgeSystemTableArray">
+            Truncate Target Operational Table (Clear All)
+        </button>
+    }
+</div>
+
+@code {
+    private List<TodoTaskDataModel> SynchronizedStateLocalMirrorCache { get; set; } = new();
+    private string UserTextStringInput { get; set; } = string.Empty;
+
+    protected override void OnInitialized() => QueryDatabaseInstance();
+
+    private void QueryDatabaseInstance() => SynchronizedStateLocalMirrorCache = DatabaseEngineWorker.FetchAllRowsFromLocalDiskTable();
+
+    private void CommitRowToDatabaseEngine()
+    {
+        if (!string.IsNullOrWhiteSpace(UserTextStringInput))
+        {
+            DatabaseEngineWorker.AppendNewRecordRow(UserTextStringInput.Trim());
+            UserTextStringInput = string.Empty;
+            QueryDatabaseInstance();
+        }
+    }
+
+    private void RunTargetDeleteQueryOperation(int internalTargetKey)
+    {
+        DatabaseEngineWorker.TerminateRecordTargetRow(internalTargetKey);
+        QueryDatabaseInstance();
+    }
+
+    private void PurgeSystemTableArray()
+    {
+        DatabaseEngineWorker.FlushEntireRegistryTable();
+        QueryDatabaseInstance();
+    }
+
+    private void CatchKeyboardTriggers(KeyboardEventArgs e) { if (e.Key == "Enter") CommitRowToDatabaseEngine(); }
+}
