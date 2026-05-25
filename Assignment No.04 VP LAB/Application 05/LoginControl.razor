@@ -1,0 +1,36 @@
+﻿@page "/auth-login"
+@inject AuthenticationStateService SessionEngine
+@implements IDisposable
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Web
+@rendermode Microsoft.AspNetCore.Components.Web.RenderMode.InteractiveServer
+
+
+<div class="glass-panel text-center mx-auto" style="max-width: 500px;">
+    <h4 style="color: var(--neon-glow);" class="mb-3">Security Authentication Terminal</h4>
+
+    @if (!SessionEngine.IsAuthenticated)
+    {
+        <input type="text" class="form-control neon-input text-center mb-3" @bind="UserInputBuffer" placeholder="Enter Operator Key..." />
+        <button class="btn btn-neon-magenta w-100" @onclick="ExecuteLoginHandshake">Establish Authenticated Stream</button>
+    }
+    else
+    {
+        <p class="text-muted">Active Pipeline Session Handle: <strong class="text-white">@SessionEngine.ActiveAccountHandle</strong></p>
+        <button class="btn btn-outline-danger w-100" @onclick="SessionEngine.DestroyActiveSessionContext">Disconnect Port</button>
+    }
+</div>
+
+@code {
+    private string UserInputBuffer { get; set; } = string.Empty;
+    private void ExecuteLoginHandshake()
+    {
+        if (!string.IsNullOrWhiteSpace(UserInputBuffer))
+        {
+            SessionEngine.RunSecureLoginHandshake(UserInputBuffer.Trim());
+            UserInputBuffer = string.Empty;
+        }
+    }
+    protected override void OnInitialized() => SessionEngine.OnStateChangedPipeline += StateHasChanged;
+    public void Dispose() => SessionEngine.OnStateChangedPipeline -= StateHasChanged;
+}
