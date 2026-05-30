@@ -3,37 +3,70 @@
 @using Microsoft.AspNetCore.Components.Web
 @rendermode Microsoft.AspNetCore.Components.Web.RenderMode.InteractiveServer
 
-<div class="glass-panel mx-auto" style="max-width: 600px;">
-    <h3 style="color: var(--neon-glow);" class="mb-4 text-center">Operation Core Action Manifest</h3>
-
-    <div class="input-group mb-4">
-        <input type="text" class="form-control neon-input" placeholder="Queue operational index task item..."
-               @bind="TaskInput" @onkeyup="MonitorKeyEvents" />
-        <button class="btn btn-neon-magenta" type="button" @onclick="PushTaskToCollection">Queue Item</button>
+<div class="interactive-card-frame animate-fade-in" style="margin-top: 2rem; max-width: 550px;">
+    <div class="card-header-accent" style="background-color: #007bff; color: #ffffff; font-weight: 600; text-align: center; padding: 0.85rem 1.25rem; font-size: 1.15rem; border-bottom: 1px solid #0069d9;">
+        To Do List
     </div>
 
-    <div class="task-stream my-3" style="max-height: 250px; overflow-y: auto;">
-        @if (InMemoryTasks.Count == 0)
-        {
-            <p class="text-muted text-center py-3 italic">No tasks active within current local volatile storage structures.</p>
-        }
-        else
-        {
-            @foreach (var task in InMemoryTasks)
+    <div class="card-body-content" style="padding: 1.5rem 1.5rem 1rem 1.5rem;">
+
+        <div class="input-group mb-4" style="box-shadow: 0 2px 6px rgba(0,0,0,0.02);">
+            <input type="text"
+                   class="form-control"
+                   style="border-radius: 6px 0 0 6px; border: 1px solid #ced4da; padding: 0.6rem 1rem; font-size: 1.05rem;"
+                   placeholder="Enter New Task."
+                   @bind="TaskInput"
+                   @bind:event="oninput"
+                   @onkeyup="MonitorKeyEvents" />
+            <button class="btn btn-primary px-4 fw-bold"
+                    style="background-color: #007bff; border: none; font-size: 1rem; border-radius: 0 6px 6px 0;"
+                    type="button"
+                    @onclick="PushTaskToCollection">
+                Add Task
+            </button>
+        </div>
+
+        <div class="task-stream" style="max-height: 280px; overflow-y: auto;">
+            @if (InMemoryTasks.Count == 0)
             {
-                <div class="p-2 mb-2 rounded border" style="background: rgba(255,255,255,0.01); border-color: var(--border-glass) !important;">
-                    <span class="text-white-50"><i class="bi bi-terminal me-2 text-info"></i> @task</span>
+                <div class="text-center py-4">
+                    <p class="text-muted mb-0 italic" style="font-size: 0.95rem;">No tasks active.</p>
                 </div>
             }
+            else
+            {
+                @foreach (var task in InMemoryTasks)
+                {
+                    <div class="p-3 mb-3 d-flex align-items-center justify-content-between animate-fade-in"
+                         style="background-color: #f8f9fa; border: 1px solid #e3e6f0; border-radius: 6px;">
+
+                        <span style="color: #4e73df; font-weight: 500; font-size: 1.1rem; padding-left: 0.25rem;">
+                            @task
+                        </span>
+
+                        <button type="button"
+                                class="btn btn-sm p-0 text-danger text-decoration-none border-0 bg-transparent"
+                                style="font-size: 1.25rem; line-height: 1; font-weight: bold; cursor: pointer;"
+                                @onclick="() => RemoveSpecificTask(task)"
+                                title="Delete Task">
+                            &times;
+                        </button>
+                    </div>
+                }
+            }
+        </div>
+
+        @if (InMemoryTasks.Count > 0)
+        {
+            <div class="mt-3 pt-3" style="border-top: 1px solid #eaecf4;">
+                <button class="btn btn-outline-danger w-100 py-2 fw-bold text-uppercase"
+                        style="letter-spacing: 1px; border-radius: 6px; border: 1px solid #dc3545; font-size: 0.9rem;"
+                        @onclick="ClearVolatileRegistry">
+                    Clear All
+                </button>
+            </div>
         }
     </div>
-
-    @if (InMemoryTasks.Count > 0)
-    {
-        <button class="btn btn-sm btn-outline-danger w-100 mt-2" @onclick="ClearVolatileRegistry">
-            Purge Buffer Arrays (Clear All)
-        </button>
-    }
 </div>
 
 @code {
@@ -49,6 +82,19 @@
         }
     }
 
-    private void MonitorKeyEvents(KeyboardEventArgs e) { if (e.Key == "Enter") PushTaskToCollection(); }
+    /* Target and remove the clicked task item */
+    private void RemoveSpecificTask(string taskToRemove)
+    {
+        if (InMemoryTasks.Contains(taskToRemove))
+        {
+            InMemoryTasks.Remove(taskToRemove);
+        }
+    }
+
+    private void MonitorKeyEvents(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter") PushTaskToCollection();
+    }
+
     private void ClearVolatileRegistry() => InMemoryTasks.Clear();
 }
