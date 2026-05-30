@@ -2,17 +2,22 @@
 @using Microsoft.AspNetCore.Components.Web
 @rendermode Microsoft.AspNetCore.Components.Web.RenderMode.InteractiveServer
 
-
-<div class="glass-panel text-center">
-    <h3 style="color: var(--neon-lilac);" class="mb-4">Data Binding Demonstration</h3>
-
-    <div class="mb-4 col-md-6 mx-auto">
-        <label class="form-label text-muted">Enter Identity Signature</label>
-        <input type="text" class="form-control neon-input text-center" @bind="UserName" @bind:event="oninput" placeholder="Type operator designation name..." />
+<div class="interactive-card-frame animate-fade-in" style="margin-top: 2rem;">
+    <div class="card-header-accent">
+        Interactive Greeting
     </div>
 
-    <div class="mt-4 p-3" style="border-left: 3px solid var(--neon-glow); background: rgba(255,255,255,0.01);">
-        <h4 class="fw-light">System Response: <span style="color: var(--neon-glow); font-weight: bold;">@GreetingMessage</span></h4>
+    <div class="card-body-content">
+        <div class="mb-4 col-md-8 mx-auto text-center">
+            <label class="form-label text-muted small fw-bold text-uppercase" style="letter-spacing: 0.5px;">Enter Your Name</label>
+            <input type="text" class="form-control form-control-lg text-center" @bind="UserName" @bind:event="oninput" placeholder="" />
+        </div>
+
+        <div class="p-3 bg-light rounded border text-center mt-4" style="min-height: 80px; display: flex; align-items: center; justify-content: center;">
+            <h4 class="fw-light mb-0" style="color: #212529;">
+                <span style="color: #198754; font-weight: bold;">@GreetingMessage</span>
+            </h4>
+        </div>
     </div>
 </div>
 
@@ -20,6 +25,6 @@
     private string UserName { get; set; } = string.Empty;
 
     private string GreetingMessage => string.IsNullOrWhiteSpace(UserName)
-        ? "Awaiting operational data stream registration..."
-        : $"Access Granted. Welcome back, Officer {UserName}. Authorization profile validated.";
+        ? "Awaiting response..."
+        : $"Hello, {UserName}";
 }
