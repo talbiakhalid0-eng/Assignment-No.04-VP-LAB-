@@ -3,39 +3,47 @@
 @using Microsoft.AspNetCore.Components.Web
 @rendermode Microsoft.AspNetCore.Components.Web.RenderMode.InteractiveServer
 
-<div class="glass-panel mx-auto" style="max-width: 600px;">
-    <h3 style="color: var(--neon-accent);" class="mb-4 text-center">Secure Profile Form Gate</h3>
+<div class="interactive-card-frame animate-fade-in" style="margin-top: 2rem;">
+    <div class="card-header-accent" style="background-color: #007bff; color: #ffffff; font-weight: 600; text-align: center; padding: 0.75rem 1.25rem; font-size: 1.1rem;">
+        Validation Form
+    </div>
 
-    <EditForm Model="@Profile" OnValidSubmit="ProcessValidFormSubmission">
-        <DataAnnotationsValidator />
+    <div class="card-body-content" style="padding: 2.5rem 2rem;">
+        <EditForm Model="@Profile" OnValidSubmit="ProcessValidFormSubmission">
+            <DataAnnotationsValidator />
 
-        <div class="mb-3">
-            <label class="form-label text-muted">First Name</label>
-            <InputText class="form-control neon-input" @bind-Value="Profile.FirstName" />
-            <ValidationMessage For="@(() => Profile.FirstName)" class="text-danger small mt-1" />
-        </div>
+            <div class="mb-3">
+                <label class="form-label text-muted small fw-bold text-uppercase" style="letter-spacing: 0.5px;">First Name</label>
+                <InputText class="form-control form-control-lg" style="border-radius: 6px; border: 1px solid #ced4da;" @bind-Value="Profile.FirstName" />
+                <ValidationMessage For="@(() => Profile.FirstName)" class="text-danger small mt-1" />
+            </div>
 
-        <div class="mb-3">
-            <label class="form-label text-muted">Last Name</label>
-            <InputText class="form-control neon-input" @bind-Value="Profile.LastName" />
-            <ValidationMessage For="@(() => Profile.LastName)" class="text-danger small mt-1" />
-        </div>
+            <div class="mb-3">
+                <label class="form-label text-muted small fw-bold text-uppercase" style="letter-spacing: 0.5px;">Last Name</label>
+                <InputText class="form-control form-control-lg" style="border-radius: 6px; border: 1px solid #ced4da;" @bind-Value="Profile.LastName" />
+                <ValidationMessage For="@(() => Profile.LastName)" class="text-danger small mt-1" />
+            </div>
 
-        <div class="mb-4">
-            <label class="form-label text-muted">System Communication Email Routing Route</label>
-            <InputText class="form-control neon-input" @bind-Value="Profile.Email" />
-            <ValidationMessage For="@(() => Profile.Email)" class="text-danger small mt-1" />
-        </div>
+            <div class="mb-4">
+                <label class="form-label text-muted small fw-bold text-uppercase" style="letter-spacing: 0.5px;">Email Address</label>
+                <InputText class="form-control form-control-lg" style="border-radius: 6px; border: 1px solid #ced4da;" @bind-Value="Profile.Email" />
+                <ValidationMessage For="@(() => Profile.Email)" class="text-danger small mt-1" />
+            </div>
 
-        <button type="submit" class="btn btn-neon-emerald w-100 py-2">Commit Security Profile</button>
-    </EditForm>
+            <button type="submit" class="btn btn-primary w-100 py-2.5 fw-bold text-uppercase" style="background-color: #007bff; border: none; letter-spacing: 0.5px;">
+                Submit Registration
+            </button>
+        </EditForm>
 
-    @if (FormCommittedSuccessfully)
-    {
-        <div class="alert alert-success mt-4 border-0 text-center" style="background: rgba(0, 245, 212, 0.1); color: var(--neon-accent);">
-            Operational profile parameters locked and committed to registration system stack safely.
-        </div>
-    }
+        @if (FormCommittedSuccessfully)
+        {
+            <div class="alert alert-success mt-4 border text-center" style="background-color: #d1e7dd; color: #0f5132; border-color: #badbcc; border-radius: 6px;">
+                <i class="bi bi-check-circle-fill me-2"></i>
+                <strong>Submission Successful!</strong>
+                <div class="small mt-1">Account Registered For @Profile.FirstName</div>
+            </div>
+        }
+    </div>
 </div>
 
 @code {
@@ -43,4 +51,18 @@
     private bool FormCommittedSuccessfully { get; set; } = false;
 
     private void ProcessValidFormSubmission() => FormCommittedSuccessfully = true;
+
+    // Nested or separate class depending on your setup
+    public class UserProfileModel
+    {
+        [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "First name is mandatory.")]
+        public string FirstName { get; set; } = string.Empty;
+
+        [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "Last name is mandatory.")]
+        public string LastName { get; set; } = string.Empty;
+
+        [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "Email address is mandatory.")]
+        [System.ComponentModel.DataAnnotations.EmailAddress(ErrorMessage = "Invalid email format structure.")]
+        public string Email { get; set; } = string.Empty;
+    }
 }
