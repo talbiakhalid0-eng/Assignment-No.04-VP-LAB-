@@ -3,15 +3,29 @@
     public class NotificationService
     {
 		private readonly NotificationConfig _globalConfiguration;
-		public NotificationService(NotificationConfig configuration) => _globalConfiguration = configuration;
+
+		// Add a field to store logs that can change
+		private List<string> _internalLogStore = new();
+
+		public NotificationService(NotificationConfig configuration)
+		{
+			_globalConfiguration = configuration;
+		}
 
 		public Task<List<string>> ExtractActiveSystemLogsAsync()
 		{
-			var outputContainer = new List<string>();
+			// Create a fresh list with a timestamp to prove it's refreshing
+			var outputContainer = new List<string>
+			{
+				$"System Time: {DateTime.Now:HH:mm:ss} - Decoupled profiles loaded.",
+				"Log 02: Dependency life cycle established via Scoped container."
+			};
+
 			for (int i = 1; i <= _globalConfiguration.DefaultNumberOfNotifications; i++)
 			{
-				outputContainer.Add($"[Registry Frame Broadcast Engine 0{i}]: Subsystem thread node metrics mapping completely balanced.");
+				outputContainer.Add($"[Registry Frame 0{i}]: Metrics mapping active.");
 			}
+
 			return Task.FromResult(outputContainer);
 		}
 	}

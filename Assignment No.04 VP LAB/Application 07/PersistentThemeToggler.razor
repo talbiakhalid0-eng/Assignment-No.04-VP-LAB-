@@ -1,54 +1,48 @@
 ﻿@page "/persistent-theme"
-@using Microsoft.JSInterop
-@inject IJSRuntime NativeJavaScriptEngineBridge
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.AspNetCore.Components.Web
 @rendermode Microsoft.AspNetCore.Components.Web.RenderMode.InteractiveServer
+@using Microsoft.JSInterop
+@inject IJSRuntime JS
 
-
-
-<div class="glass-panel text-center mx-auto" style="max-width: 500px;">
-    <h3 class="mb-4">Persistent Layout Matrix Core</h3>
-    <p class="text-muted small mb-4">Active Layout Parameter Mode: <strong style="color: var(--neon-glow);">@(SystemIsConfiguredDark ? "Obsidian Space Theme" : "Light UI Engine Context")</strong></p>
-
-    <button class="btn btn-neon-magenta py-2 px-3" @onclick="ExecuteThemeToggleShift">
-        Switch Graphical Presentation Configuration
-    </button>
+<div class="container mt-5">
+    <div class="card shadow border-0 rounded-4" style="max-width: 400px; margin: auto;">
+        <div class="card-header bg-secondary text-white text-center py-3">
+            <h4 class="mb-0">Theme Portal</h4>
+        </div>
+        <div class="card-body p-4 text-center">
+            <button class="btn btn-outline-primary btn-lg" @onclick="ToggleTheme">
+                @(isDarkMode ? "🌞 Switch to Light Mode" : "🌙 Switch to Dark Mode")
+            </button>
+        </div>
+    </div>
 </div>
 
 @code {
-    private bool SystemIsConfiguredDark { get; set; } = true;
+    private bool isDarkMode = false;
 
-    protected override async Task OnAfterRenderAsync(bool componentsFirstLoadPhase)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (componentsFirstLoadPhase)
+        if (firstRender)
         {
-            try
-            {
-                var cachedSystemThemeToken = await NativeJavaScriptEngineBridge.InvokeAsync<string>("localStorage.getItem", "appThemeSelectionProfile");
-                if (cachedSystemThemeToken == "light-mode-active")
-                {
-                    SystemIsConfiguredDark = false;
-                    await NativeJavaScriptEngineBridge.InvokeVoidAsync("document.body.classList.add", "light-mode");
-                }
-                StateHasChanged();
-            }
-            catch (Exception) { /* Graceful structural fallback constraint safety pass hook */ }
+            var cachedTheme = await JS.InvokeAsync<string>("localStorage.getItem", "app-current-theme");
+            isDarkMode = (cachedTheme == "dark");
+            await ApplyTheme(isDarkMode ? "dark" : "light");
         }
     }
 
-    private async Task ExecuteThemeToggleShift()
+    private async Task ToggleTheme()
     {
-        SystemIsConfiguredDark = !SystemIsConfiguredDark;
-        if (!SystemIsConfiguredDark)
-        {
-            await NativeJavaScriptEngineBridge.InvokeVoidAsync("localStorage.setItem", "appThemeSelectionProfile", "light-mode-active");
-            await NativeJavaScriptEngineBridge.InvokeVoidAsync("document.body.classList.add", "light-mode");
-        }
-        else
-        {
-            await NativeJavaScriptEngineBridge.InvokeVoidAsync("localStorage.setItem", "appThemeSelectionProfile", "dark-mode-active");
-            await NativeJavaScriptEngineBridge.InvokeVoidAsync("document.body.classList.remove", "light-mode");
-        }
+        isDarkMode = !isDarkMode;
+        string theme = isDarkMode ? "dark" : "light";
+
+        await JS.InvokeVoidAsync("localStorage.setItem", "app-current-theme", theme);
+        await ApplyTheme(theme);
+    }
+
+    private async Task ApplyTheme(string theme)
+    {
+        // Calling the global helper we created in App.razor
+        await JS.InvokeVoidAsync("themeManager.apply", theme);
     }
 }

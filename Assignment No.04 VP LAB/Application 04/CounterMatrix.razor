@@ -3,20 +3,36 @@
 @using Microsoft.AspNetCore.Components.Web
 @rendermode Microsoft.AspNetCore.Components.Web.RenderMode.InteractiveServer
 
-<div class="glass-panel text-center mx-auto" style="max-width: 500px;">
-    <h3 style="color: var(--neon-lilac);" class="mb-3">Unified Metrics Tracker</h3>
-
-    <div class="counter-display my-4">
-        <h1 class="display-1 fw-bold" style="color: var(--neon-glow); text-shadow: 0 0 15px rgba(255, 0, 127, 0.4);">@MetricStateRegister</h1>
-        <small class="text-muted text-uppercase tracking-wider">Synchronized Shared Registry Register</small>
+<div class="interactive-card-frame animate-fade-in" style="margin-top: 2rem; max-width: 500px;">
+    <div class="card-header-accent" style="background-color: #007bff; color: #ffffff; font-weight: 600; text-align: center; padding: 0.75rem 1.25rem; font-size: 1.1rem;">
+        Counter System
     </div>
 
-    <div class="row g-2">
-        <div class="col-6">
-            <button class="btn btn-neon-magenta w-100 py-2 fw-semibold" @onclick="IncrementRegisterState">Iterate Frame</button>
+    <div class="card-body-content" style="padding: 2.5rem 2rem;">
+
+        <div class="counter-display text-center mb-5">
+            <h1 class="display-1 fw-bold" style="color: #212529; font-size: 5.5rem; margin-bottom: 0;">
+                @MetricStateRegister
+            </h1>
+            <span class="text-muted text-uppercase small fw-bold tracking-wider" style="letter-spacing: 1px; font-size: 0.8rem; opacity: 0.7;">
+                Synchronized Counter
+            </span>
         </div>
-        <div class="col-6">
-            <input type="number" class="form-control neon-input text-center py-2" @bind="MetricStateRegister" />
+
+        <div class="row g-3 align-items-center">
+            <div class="col-6">
+                <button class="btn btn-primary w-100 py-2.5 fw-bold text-uppercase"
+                        style="background-color: #007bff; border: none; letter-spacing: 0.5px; font-size: 0.9rem;"
+                        @onclick="IncrementRegisterState">
+                    Increment
+                </button>
+            </div>
+            <div class="col-6">
+                <input type="number"
+                       class="form-control form-control-lg text-center fw-bold"
+                       style="border-radius: 6px; border: 1px solid #ced4da; color: #4e73df;"
+                       @bind="MetricStateRegister" />
+            </div>
         </div>
     </div>
 </div>

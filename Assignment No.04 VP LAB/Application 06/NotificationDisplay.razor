@@ -5,34 +5,56 @@
 @using Microsoft.AspNetCore.Components.Web
 @rendermode Microsoft.AspNetCore.Components.Web.RenderMode.InteractiveServer
 
+<div class="interactive-card-frame animate-fade-in" style="margin-top: 2rem; max-width: 550px;">
+    <div class="card-header-accent" style="background-color: #007bff; color: #ffffff; font-weight: 600; text-align: center; padding: 0.85rem 1.25rem; font-size: 1.15rem; border-bottom: 1px solid #0069d9;">
+        Live Log 
+    </div>
 
-<div class="glass-panel mx-auto mt-2" style="max-width: 550px;">
-    <h4 class="text-white mb-3">Live Log Dispatch Matrix</h4>
-    <button class="btn btn-neon-emerald btn-sm w-100 mb-3" @onclick="FetchBroadcastsFromService">Refresh Bus Pipelines</button>
+    <div class="card-body-content" style="padding: 1.5rem;">
 
-    @if (FetchedSystemBroadcastLogs != null)
-    {
-        @foreach (var broadcastItem in FetchedSystemBroadcastLogs)
-        {
-            @if (StructuralStyleReference.NotificationStyle == "Compact")
+        <button class="btn btn-primary w-100 mb-4 py-2 fw-bold text-uppercase"
+                style="background-color: #007bff; border: none; letter-spacing: 0.5px; font-size: 0.9rem;"
+                @onclick="HandleRefreshClick">
+            Refresh 
+        </button>
+
+        <div class="notification-stream" style="max-height: 350px; overflow-y: auto;">
+            @if (FetchedSystemBroadcastLogs != null)
             {
-                <div class="p-1 mb-1 small text-truncate text-warning font-monospace" style="border-bottom: 1px solid var(--border-glass);">
-                    ⚠️ @broadcastItem.Substring(0, 35)...
-                </div>
+                @foreach (var broadcastItem in FetchedSystemBroadcastLogs)
+                {
+                    <div class="p-3 mb-3 rounded border animate-fade-in"
+                         style="background-color: #f8f9fa; border-left: 4px solid #007bff !important; border: 1px solid #e3e6f0;">
+                        <span class="d-block fw-bold text-uppercase small mb-1" style="color: #4e73df; letter-spacing: 0.5px;">
+                            Active Dispatch Notification:
+                        </span>
+                        <span style="color: #212529; font-size: 0.95rem; font-weight: 500;">
+                            @broadcastItem
+                        </span>
+                    </div>
+                }
             }
-            else
-            {
-                <div class="p-2 mb-2 rounded small text-white-50" style="background: rgba(255,255,255,0.02); border-left: 3px solid var(--neon-accent);">
-                    <span class="text-white d-block fw-semibold">Active Dispatch Notification:</span>
-                    @broadcastItem
-                </div>
-            }
-        }
-    }
+        </div>
+    </div>
 </div>
 
 @code {
     private List<string>? FetchedSystemBroadcastLogs { get; set; }
-    protected override async Task OnInitializedAsync() => await FetchBroadcastsFromService();
-    private async Task FetchBroadcastsFromService() => FetchedSystemBroadcastLogs = await EngineWorker.ExtractActiveSystemLogsAsync();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await FetchBroadcastsFromService();
+    }
+
+    // This is the method the button is looking for
+    private async Task HandleRefreshClick()
+    {
+        await FetchBroadcastsFromService();
+        StateHasChanged(); // This forces the UI to update
+    }
+
+    private async Task FetchBroadcastsFromService()
+    {
+        FetchedSystemBroadcastLogs = await EngineWorker.ExtractActiveSystemLogsAsync();
+    }
 }

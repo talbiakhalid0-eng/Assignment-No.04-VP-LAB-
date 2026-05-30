@@ -1,9 +1,18 @@
 ﻿@inherits LayoutComponentBase
 
-@Body
+<div class="page-wrapper">
+    <div class="app-sidebar">
+        <NavMenu />
+    </div>
 
-<div id="blazor-error-ui" data-nosnippet>
-    An unhandled error has occurred.
-    <a href="." class="reload">Reload</a>
-    <span class="dismiss">🗙</span>
+    <main class="main-content-window">
+        <div class="top-header-banner">
+            <span class="banner-title">OVERVIEW</span>
+            <span class="about-link">About</span>
+        </div>
+
+        <div class="content-body px-4 py-5">
+            @Body
+        </div>
+    </main>
 </div>
